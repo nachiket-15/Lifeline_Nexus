@@ -187,11 +187,12 @@ CREATE TABLE `DONOR_INFO` (
 
 
 
+
+
 DROP TABLE IF EXISTS `PAYMENT_TRANSACTION`;
 CREATE TABLE `PAYMENT_TRANSACTION` (
   `rec_id` int(11) DEFAULT NULL,
   `payment_amt` int(11) DEFAULT NULL,
-  `payment_time` datetime DEFAULT NULL,
   KEY `rec_id` (`rec_id`),
   CONSTRAINT `PAYMENT_TRANSACTION_ibfk_1` FOREIGN KEY (`rec_id`) REFERENCES `RECIPIENT` (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -218,9 +219,6 @@ CREATE TABLE `RECIEVES` (
 -- No need to lock/unlock tables for this operation
 
 
-
-
--- SHOW USER() 
 
 
 

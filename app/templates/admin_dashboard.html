@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Blood Bank Management System</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 20px;
+        }
+
+        .container-fluid {
+            margin-right: auto;
+            margin-left: auto;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        .list-group-item-action {
+            cursor: pointer;
+        }
+
+        #content {
+            border: 1px solid #ddd;
+            padding: 20px;
+            min-height: 200px;
+        }
+    </style>
 </head>
 <body class="text-center bg-light">
 
@@ -12,46 +34,55 @@
         <h1 class="text-danger mt-5">Admin Dashboard</h1>
 
         <div class="row mt-5">
-            <div class="col-3">
+            <div class="col-6">
                 <div class="list-group">
                     <a href="{{ url_for('add_donor') }}" class="list-group-item list-group-item-action">Add Donor</a>
 
-                    <a href="{{ url_for('add_recipient') }}" class="list-group-item list-group-item-action">Add Recepient</a>
+                    <a href="{{ url_for('add_recipient') }}" class="list-group-item list-group-item-action">Add Recipient</a>
 
                     <a href="{{ url_for('add_plasma_details') }}" class="list-group-item list-group-item-action">Add Blood Details</a>
 
                     <a href="{{ url_for('add_blood_cost') }}" class="list-group-item list-group-item-action">Add Blood Cost</a>
 
-
                     <a href="{{ url_for('add_payment_transaction') }}" class="list-group-item list-group-item-action">Add Payment Transaction</a>
 
-
                     <a href="{{ url_for('view_blood') }}" class="list-group-item list-group-item-action">View Blood</a>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="list-group">
+                    <a href="{{ url_for('hire_staff') }}"  class="list-group-item list-group-item-action">Hire Staff</a>
 
 
-                     <a href="{{ url_for('supervisors') }}" class="list-group-item list-group-item-action">Supervisors</a>
+                    <a href="{{ url_for('view_donors') }}" class="list-group-item list-group-item-action">View Donors</a>
 
+                    <a href="{{ url_for('view_recipients') }}" class="list-group-item list-group-item-action">View Recipients</a>
 
-                    <!-- <a href="{{ url_for('add_payment_transaction') }}" class="list-group-item list-group-item-action">Logout</a> -->
+                    <!-- Add more buttons as needed -->
+
+                    <a href="{{ url_for('supervisors') }}" class="list-group-item list-group-item-action">Supervisors</a>
+
+                    <a href="{{ url_for('view_staff') }}" class="list-group-item list-group-item-action">View Staff</a>
+
+                    <a href="{{ url_for('view_transactions') }}"  class="list-group-item list-group-item-action" onclick="loadContent('View Transactions')">LogOut</a>
 
 
                 </div>
             </div>
-            <div class="col-9">
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12">
                 <div id="content"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // You can keep this script if you want to dynamically load content using JavaScript
         function loadContent(funcName) {
-            // You can use AJAX or other methods to load content dynamically based on the button clicked
             document.getElementById('content').innerHTML = '<h2 class="text-danger">' + funcName + ' Content Goes Here</h2>';
         }
     </script>
-
-    
 
 </body>
 </html>

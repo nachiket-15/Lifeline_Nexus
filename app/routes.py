@@ -287,6 +287,9 @@ def supervisors():
 
 
 
+
+
+
 @app.route('/view_donors')
 def view_donors():
     try:
@@ -306,6 +309,15 @@ def view_donors():
         return render_template('error.html', error_message='An error occurred.')
 
 
+
+
+
+
+
+
+
+
+
 @app.route('/view_recipients')
 def view_recipients():
     try:
@@ -313,7 +325,7 @@ def view_recipients():
         cur = conn.cursor()
 
         query = "SELECT * FROM RECIPIENT"
-        cur.execute(query)  
+        cur.execute(query)
         recipient_data = cur.fetchall()
 
         cur.close()
@@ -323,4 +335,83 @@ def view_recipients():
     except Exception as e:
         print(e)
         return render_template('error.html', error_message='An error occurred.')
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Hire Staff
+@app.route('/hire_staff', methods=['GET', 'POST'])
+def hire_staff():
+    if request.method == 'POST':
+        emp_id = request.form['emp_id']
+        fname = request.form['fname']
+        supervisor = request.form['supervisor']
+        address1 = request.form['address1']
+        phone_no = request.form['phone_no']
+        salary = request.form['salary']
+
+        # Use placeholders in the SQL query to avoid SQL injection
+        query = "INSERT INTO STAFF(emp_id, fname, supervisor, address1, phone_no, salary) VALUES (%s, %s, %s, %s, %s, %s)"
+        values = (emp_id, fname, supervisor, address1, phone_no, salary)
+
+        executeQuery(query, values)
+
+        print("Staff hired successfully!")
+
+    return render_template('hire_staff.html')
+
+
+
+
+
+
+
+
+@app.route('/view_transactions')
+def view_transactions():
+    try:
+        transaction_data = executeQuery("SELECT * FROM PAYMENT_TRANSACTION")
+        print(transaction_data)  # Add this line for debugging
+        return render_template('view_transactions.html', transaction_data=transaction_data)
+    except Exception as e:
+        print(str(e))  # Add this line for debugging
+        return render_template('error.html', error_message=str(e))
+
+
+
+
+
+
+
+
+
+
+
+
+@app.route('/view_staff')
+def view_staff():
+    try:
+        # Retrieve staff data from the database
+        staff_data = executeQuery("SELECT * FROM STAFF")
+        return render_template('view_staff.html', staff_data=staff_data)
+    except Exception as e:
+        return render_template('error.html', error_message=str(e))
+
+
+
+
+
+
+
+
+
 
