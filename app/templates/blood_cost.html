@@ -13,37 +13,29 @@
 </head>
 <body class="text-center bg-light">
     <div class="container">
-        <h1 class="text-danger mt-5">View Staff</h1>
+        <h1 class="text-danger mt-5">View Blood Cost</h1>
 
         <!-- Check if staff_data is not empty -->
-        {% if staff_data %}
+        {% if blood_cost_data %}
             <table class="table table-bordered mt-4">
                 <thead>
                     <tr>
-                        <th>Employee ID</th>
-                        <th>First Name</th>
-                        <th>Supervisor</th>
-                        <th>Address</th>
-                        <th>Phone Number</th>
-                        <th>Salary</th>
+                        <th>Plasma Bag Number</th>
+                        <th>Blood Cost</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Loop through each staff data and display it in the table -->
-                    {% for data in staff_data %}
+                    {% for data in blood_cost_data %}
                         <tr>
-                            <td>{{ data.emp_id }}</td>
-                            <td>{{ data.fname }}</td>
-                            <td>{{ data.supervisor }}</td>
-                            <td>{{ data.address1 }}</td>
-                            <td>{{ data.phone_no }}</td>
-                            <td>{{ data.salary }}</td>
+                            <td>{{ data.plasma_bag_number }}</td>
+                            <td>{{ data.cost }}</td> 
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            <p class="text-secondary">No staff data available.</p>
+            <p class="text-secondary">No blood cost data available.</p>
         {% endif %}
     </div>
     <!-- Add necessary scripts -->

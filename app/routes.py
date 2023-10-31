@@ -121,11 +121,12 @@ def add_donor():
             query = "INSERT INTO DONORS (donor_id, date_of_donation) VALUES (%s, %s)"
             values = (donor_id, date_of_donation)
             executeQuery(query, values)
-            return "Donor added successfully!"
+            return render_template('success.html', success_message="Donor added successfully!")
         else:
-            return "Donor ID already taken. Choose a new unique Donor ID."
+            return render_template('error.html', error_message="Donor ID already taken. Choose a new unique Donor ID.")
 
     return render_template('add_donor.html')
+
 
 
 
@@ -146,25 +147,23 @@ def add_recipient():
             row["blood_type"] = request.form.get("blood_type")
             row["quantity_needed"] = int(request.form.get("quantity_needed"))
             row["date_of_request"] = request.form.get("date_of_request")
-            dob = request.form.get("dob").split('-')
-            row["dOB"] = dob[0]+'-'+dob[1]+'-'+dob[2]
+            row["dOB"] = request.form.get("dob")
             row["age"] = calculateAge(datetime.strptime(row["dOB"], '%Y-%m-%d'))
             row["sex"] = request.form.get("sex")
             row["address"] = request.form.get("address")
 
-            query = "INSERT INTO RECIPIENT(recipient_name, rec_id, blood_type, quantity_needed, date_of_request, dOB, age, sex, address) VALUES (%s, %d, %s, %d, %s, %s, %d, %s, %s)"
-            values = (row["recipient_name"], row["rec_id"], row["blood_type"], row["quantity_needed"], row["date_of_request"], row["dOB"], row["age"], row["sex"], row["address"])
+            query = "INSERT INTO RECIPIENT(rec_id, blood_type, quantity_needed, date_of_request, recipient_name, dOB, age, sex, address) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            values = (row["rec_id"], row["blood_type"], row["quantity_needed"], row["date_of_request"], row["recipient_name"], row["dOB"], row["age"], row["sex"], row["address"])
 
             executeQuery(query, values)
 
             print("Inserted Into Database")
 
         except Exception as e:
-            excepting(e)
+            print(e)
+            return render_template('error.html', error_message=str(e))
 
     return render_template('add_recipient.html')
-
-
 
 
 
@@ -191,9 +190,14 @@ def add_plasma_details():
         query = "INSERT INTO BLOOD(plasma_bag_number, blood_type, blood_amount, platelets_count) VALUES (%s, %s, %s, %s)"
         values = (plasma_bag_number, blood_type, blood_amount, platelets_count)
 
-        executeQuery(query,values)
-        
-        print("Plasma details added successfully!")
+        try:
+            executeQuery(query, values)
+            print("Plasma details added successfully!")
+            return render_template('success.html')
+
+        except Exception as e:
+            print(e)
+            return render_template('error.html', error_message=str(e))
 
     return render_template('add_plasma_details.html')
 
@@ -219,6 +223,9 @@ def add_blood_cost():
         print("Blood cost added successfully!")
 
     return render_template('add_blood_cost.html')
+
+
+
 
 
 
@@ -270,6 +277,26 @@ def view_blood():
         print(e)
         return render_template('error.html', error_message='An error occurred.')
 
+
+
+
+@app.route('/blood_cost')
+def blood_cost():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        query = "SELECT * FROM BLOOD_COST"
+        cur.execute(query)  
+        blood_cost_data = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return render_template('blood_cost.html', blood_cost_data=blood_cost_data)
+    except Exception as e:
+        print(e)
+        return render_template('error.html', error_message='An error occurred.')
 
 
 
@@ -346,29 +373,29 @@ def view_recipients():
 
 
 
-
-
-# Hire Staff
 @app.route('/hire_staff', methods=['GET', 'POST'])
 def hire_staff():
     if request.method == 'POST':
-        emp_id = request.form['emp_id']
-        fname = request.form['fname']
-        supervisor = request.form['supervisor']
-        address1 = request.form['address1']
-        phone_no = request.form['phone_no']
-        salary = request.form['salary']
+        try:
+            emp_id = request.form['emp_id']
+            fname = request.form['fname']
+            supervisor = request.form['supervisor']
+            address1 = request.form['address1']
+            phone_no = request.form['phone_no']
+            salary = request.form['salary']
 
-        # Use placeholders in the SQL query to avoid SQL injection
-        query = "INSERT INTO STAFF(emp_id, fname, supervisor, address1, phone_no, salary) VALUES (%s, %s, %s, %s, %s, %s)"
-        values = (emp_id, fname, supervisor, address1, phone_no, salary)
+            #
+            # Your query and values
+            query = "INSERT INTO STAFF(emp_id, fname, supervisor, address1, phone_no, salary) VALUES (%s, %s, %s, %s, %s, %s)"
+            values = (emp_id, fname, supervisor, address1, phone_no, salary)
 
-        executeQuery(query, values)
+            executeQuery(query,values)
 
-        print("Staff hired successfully!")
+            return render_template('success.html',success_message='Staff hired successfully!')
+        except Exception as e:
+            return render_template('error.html', error_message=str(e))
 
     return render_template('hire_staff.html')
-
 
 
 
@@ -396,22 +423,23 @@ def view_transactions():
 
 
 
-
 @app.route('/view_staff')
 def view_staff():
     try:
         # Retrieve staff data from the database
-        staff_data = executeQuery("SELECT * FROM STAFF")
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        query="SELECT * FROM STAFF"
+        cur.execute(query)
+        staff_data = cur.fetchall()
+
+        cur.close()
+        conn.close()
+        
         return render_template('view_staff.html', staff_data=staff_data)
     except Exception as e:
         return render_template('error.html', error_message=str(e))
-
-
-
-
-
-
-
 
 
 

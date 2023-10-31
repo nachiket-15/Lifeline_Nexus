@@ -9,7 +9,7 @@ def get_db_connection():
         con = pymysql.connect(
             host='localhost',
             user='root',
-            password='password',
+            password='Nachiket@4545',
             database='PLASMABANK',
             cursorclass=pymysql.cursors.DictCursor
         )

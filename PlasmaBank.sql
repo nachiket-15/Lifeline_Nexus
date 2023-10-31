@@ -20,6 +20,8 @@ USE `PLASMABANK`;
 
 
 
+
+
 -- Create a table for user accounts
 DROP TABLE IF EXISTS `USER_ACCOUNTS`;
 CREATE TABLE `USER_ACCOUNTS` (
@@ -92,11 +94,10 @@ CREATE TABLE `RECIPIENT` (
   `blood_type` varchar(10) DEFAULT NULL,
   `quantity_needed` int(11) DEFAULT NULL,
   `date_of_request` date DEFAULT NULL,
-  `fname` varchar(10) DEFAULT NULL,
-  `lname` varchar(10) DEFAULT NULL,
+  `recipient_name` varchar(30) DEFAULT NULL,
   `dOB` date DEFAULT NULL,
-  `sex` varchar(10) DEFAULT NULL,
   `age` int(11) DEFAULT NULL,
+  `sex` varchar(10) DEFAULT NULL,
   `address` char(30) DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -105,9 +106,8 @@ CREATE TABLE `RECIPIENT` (
 
 
 
-
 -- Insert data into the RECIPIENT table
-INSERT INTO `RECIPIENT` VALUES (1,'A+',23,'1999-10-10','Veeral','Agarwal','1998-10-10','M',23,'C102, Raj Vihar, Mumbai');
+INSERT INTO `RECIPIENT` VALUES (1,'A+',23,'1999-10-10','Veeral Agarwal','1998-10-10','M',23,'C102, Raj Vihar, Mumbai');
 
 
 
@@ -132,15 +132,16 @@ CREATE TABLE `STAFF` (
   `emp_id` int(11) NOT NULL,
   `fname` varchar(10) DEFAULT NULL,
   `supervisor` varchar(20) DEFAULT NULL,
-  `address1` varchar(10) DEFAULT NULL,
-  `phone_no` int(11) DEFAULT NULL,
+  `address1` varchar(50) DEFAULT NULL,
+  `phone_no` varchar(15) DEFAULT NULL,
   `salary` int(11) DEFAULT NULL,
   PRIMARY KEY (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Insert data into the STAFF table
-INSERT INTO `STAFF` VALUES (1,'Def Gef','Sandy','23 A','1234567890',23411);
+INSERT INTO `STAFF` VALUES (1,'Def Gef','Sandy','23 A','9090909090',23411);
 
+select * from STAFF;
 
 
 
