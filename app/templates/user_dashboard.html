@@ -14,10 +14,17 @@
         <div class="row mt-5">
             <div class="col-3">
                 <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action" onclick="loadContent('Donate Blood')">Donate Blood</a>
-                    <a href="#" class="list-group-item list-group-item-action" onclick="loadContent('View Available Blood')">View Available Blood</a>
-                    <a href="#" class="list-group-item list-group-item-action" onclick="loadContent('Request for Blood')">Request for Blood</a>
-                    <a href="#" class="list-group-item list-group-item-action" onclick="loadContent('Log Out')">Log Out</a>
+
+                    <a href="{{ url_for('add_donor') }}" class="list-group-item list-group-item-action">Donate Blood</a>
+
+                    <a href="{{ url_for('view_blood') }}" class="list-group-item list-group-item-action">View Available Blood</a>
+
+                    <a href="{{ url_for('user_request') }}" class="list-group-item list-group-item-action" >Request for Blood</a>
+
+                    <a href="{{ url_for('request_status') }}" class="list-group-item list-group-item-action" >Request Status</a>
+
+                    <a href="{{ url_for('index')}}" class="list-group-item list-group-item-action" >Log Out</a>
+
                 </div>
             </div>
             <div class="col-9">

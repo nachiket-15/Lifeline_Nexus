@@ -3,28 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Donor - Blood Bank Management System</title>
+    <title>Blood Donation Request</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
 </head>
 <body class="text-center bg-light">
 
     <div class="container">
-        <h1 class="text-danger mt-5">Add Donor</h1>
+        <h1 class="text-danger mt-5">Blood Donation Request</h1>
 
-        <form method="POST" action="{{ url_for('add_donor') }}">
+        <!-- Blood donation request form -->
+        <form method="POST" class="mt-4">
 
-
-
-            <div class="mb-3">
-                <label for="donor_id" class="form-label">Enter Unique Donor ID</label>
-                <input type="number" class="form-control" id="donor_id" name="donor_id" required>
+            <!-- <div class="mb-3">
+                <label for="username" class="form-label">Enter your username</label>
+                <input type="text" class="form-control" name="username" id="username" required>
             </div>
+             -->
+            
 
-            <div class="mb-3">
-                <label for="donor_name" class="form-label">Enter Donor Name</label>
-                <input type="text" class="form-control" name="donor_name" id="donor_name" required>
-            </div>
-
+            
             <div class="mb-3">
                 <label for="blood_type" class="form-label">Enter Blood Type</label>
                 <select class="form-select" id="blood_type" name="blood_type" required>
@@ -40,15 +37,23 @@
                 </select>
             </div>
 
+
+
             <div class="mb-3">
-                <label for="date_of_donation" class="form-label">Enter Date of Donation</label>
-                <input type="date" class="form-control" id="date_of_donation" name="date_of_donation" required>
+                <label for="quantity_needed" class="form-label">Quantity Needed</label>
+                <input type="number" class="form-control" id="quantity_needed" name="quantity_needed" required>
             </div>
 
-        
-            <button type="submit" class="btn btn-danger">Add Donor</button>
 
 
+            <div class="mb-3">
+                <label for="date_of_request" class="form-label">Date of Request</label>
+                <input type="date" class="form-control" id="date_of_request" name="date_of_request" required>
+            </div>
+
+
+            
+            <button type="submit" class="btn btn-primary">Submit Request</button>
         </form>
     </div>
 

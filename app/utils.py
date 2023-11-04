@@ -1,5 +1,3 @@
-# app/utils.py
-
 import pymysql
 from datetime import datetime, date
 
@@ -33,7 +31,7 @@ def authenticate_admin(username, password):
     if con:
         try:
             with con.cursor() as cur:
-                query = f"SELECT * FROM USER_ACCOUNTS WHERE username = '{username}' AND password = '{password}'"
+                query = f"SELECT * FROM ADMIN_ACCOUNTS WHERE username = '{username}' AND password = '{password}'"
                 cur.execute(query)
                 result = cur.fetchone()
                 return result is not None
@@ -89,7 +87,7 @@ def create_user_account(username, password):
     return False
 
 
-
+import logging
 def executeQuery(query, values=None):
     con = get_db_connection()
     try:
@@ -98,9 +96,12 @@ def executeQuery(query, values=None):
                 cur.execute(query, values)
             else:
                 cur.execute(query)
+            result = cur.fetchall()  # Fetch all rows from the result set
             con.commit()
+            return result
     except Exception as e:
-        print(f"Error executing query: {e}")
+        logging.error(f"Error executing query: {e}")
+        return None  # Indicate failure
     finally:
         con.close()
 

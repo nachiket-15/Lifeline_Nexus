@@ -16,6 +16,8 @@
                 <thead>
                     <tr>
                         <th>Donor ID</th>
+                        <th>Donor Name</th>
+                        <th>Donated Blood Type</th>
                         <th>Date of Donation</th>
                     </tr>
                 </thead>
@@ -23,6 +25,8 @@
                     {% for data in donor_data %}
                         <tr>
                             <td>{{ data.donor_id }}</td>
+                            <td>{{ data.donor_name}}</td>
+                            <td>{{ data.blood_type}}</td>
                             <td>{{ data.date_of_donation }}</td>
                         </tr>
                     {% endfor %}
@@ -33,7 +37,6 @@
         {% endif %}
     </div>
 
-    <!-- Add Bootstrap JS and Popper.js (if needed) here if you use Bootstrap components that require them -->
 
 </body>
 </html>

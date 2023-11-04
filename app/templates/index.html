@@ -8,27 +8,30 @@
 </head>
 <body class="text-center bg-light">
 
-    <h1 class="text-danger mt-5">LifeLine Nexus : Blood Bank Management System</h1>
-
-    <img src="{{ url_for('static', filename='bloodbank.jpg') }}" class="img-fluid img-thumbnail rounded mt-4" alt="Blood Bank Image" style="width: 50%;">
+    
 
     <div class="container mt-5">
-        <div class="row">
+        <h1 class="text-danger mt-3">Blood Bank Management System</h1>
+        <img src="{{ url_for('static', filename='bloodbank.jpg') }}" class="img-fluid img-thumbnail rounded mt-4" alt="Blood Bank Image" style="width: 50%;">
+        <div class="row mt-5">
             <div class="col">
                 <a href="{{ url_for('admin_login') }}" class="btn btn-danger btn-lg">Admin Login</a>
             </div>
             <div class="col">
                 <a href="{{ url_for('user_login') }}" class="btn btn-danger btn-lg">User Login</a>
             </div>
-            
         </div>
     </div>
 
     <div class="mt-4">
         <p class="text-secondary">Don't have an account? <a href="{{ url_for('create_account') }}" class="text-danger font-weight-bold">Create one here</a>.</p>
     </div>
+    
+    <img src="{{ url_for('static', filename='learn_about_donation.png') }}" class="img-fluid img-thumbnail rounded mt-4" alt="DonationFact" style="width: 100%;">
 
     <!-- Add Bootstrap JS and Popper.js (if needed) here if you use Bootstrap components that require them -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
 
 </body>
 </html>

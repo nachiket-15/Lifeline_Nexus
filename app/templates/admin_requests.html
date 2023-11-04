@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Requests - Blood Bank Management System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="text-center bg-light">
+    <div class="container">
+        <h1 class="text-danger mt-5">Blood Donation Requests</h1>
+        <!-- Loop through requests and display them in a table -->
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Username</th>
+                    <th>Blood Type</th>
+                    <th>Quantity Needed</th>
+                    <th>Date of Request</th>
+                    <th>Status</th>
+                    <th>Admin Comment</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop through each request and display it in the table -->
+                <!-- Loop through each request and display it in the table -->
+{% for request in requests %}
+<tr>
+    <td>{{ request.request_id }}</td>
+    <td>{{ request.username }}</td>
+    <td>{{ request.blood_type }}</td>
+    <td>{{ request.quantity_needed }}</td>
+    <td>{{ request.date_of_request }}</td>
+    <td>{{ request.status }}</td>
+    <td>{{ request.admin_comment }}</td>
+    <td>
+        <a href="{{ url_for('admin_approve', request_id=request.request_id) }}" class="btn btn-success" style="margin: 6px;">Approve</a>
+        <a href="{{ url_for('admin_reject', request_id=request.request_id) }}" class="btn btn-danger" style="margin: 6px;">Reject</a>
+    </td>
+</tr>
+{% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js scripts (for Bootstrap components that require JS) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
