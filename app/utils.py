@@ -25,6 +25,45 @@ def excepting(e):
 	return
 
 
+def executeQueryWithLastID(query, values):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(query, values)
+
+        # Get the last inserted ID
+        cursor.execute("SELECT LAST_INSERT_ID()")
+        last_id = cursor.fetchone()[0]
+
+        connection.commit()
+
+        return last_id
+    except Exception as e:
+        print(f"Error: {e}")
+    
+
+
+
+
+
+def fetchOne(query, values):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute(query, values)
+    result = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return result
+
+
+
+
+
+
 # AUTHENTICATE ADMIN
 def authenticate_admin(username, password):
     con = get_db_connection()

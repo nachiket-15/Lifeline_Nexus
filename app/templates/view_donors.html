@@ -5,10 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Donors - Blood Bank Management System</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <style>
+        .top-left {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+        }
+    </style>
 </head>
 <body class="text-center bg-light">
 
     <div class="container">
+        <a href="{{ url_for('admin_dashboard') }}" class="top-left">
+            <img src="{{ url_for('static', filename='home.png') }}" alt="Home" style="width: 60px; height: 60px; ">
+        </a>
         <h1 class="text-danger mt-5">View Donors</h1>
 
         {% if donor_data %}
@@ -17,8 +27,10 @@
                     <tr>
                         <th>Donor ID</th>
                         <th>Donor Name</th>
-                        <th>Donated Blood Type</th>
+                        <th>Blood Type</th>
                         <th>Date of Donation</th>
+                        <th>Amount of Blood Donated</th>
+                        <!-- Add more columns if needed -->
                     </tr>
                 </thead>
                 <tbody>
@@ -28,6 +40,8 @@
                             <td>{{ data.donor_name}}</td>
                             <td>{{ data.blood_type}}</td>
                             <td>{{ data.date_of_donation }}</td>
+                            <td>{{data.blood_amount}} ml</td>
+                            <!-- Add more columns if needed -->
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -37,7 +51,5 @@
         {% endif %}
     </div>
 
-
 </body>
 </html>
-

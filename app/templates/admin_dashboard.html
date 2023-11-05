@@ -40,25 +40,33 @@
 
                     <a href="{{ url_for('add_recipient') }}" class="list-group-item list-group-item-action">Add Recipient</a>
 
-                    <a href="{{ url_for('add_plasma_details') }}" class="list-group-item list-group-item-action">Add Blood Details</a>
+                    <!-- <a href="{{ url_for('add_plasma_details') }}" class="list-group-item list-group-item-action">Add Blood Details</a> -->
 
-                    <a href="{{ url_for('add_blood_cost') }}" class="list-group-item list-group-item-action">Add Blood Cost</a>
+                    <a href="{{ url_for('update_blood_cost') }}" class="list-group-item list-group-item-action">Update Blood Cost</a>
 
-                    <a href="{{ url_for('add_payment_transaction') }}" class="list-group-item list-group-item-action">Add Payment Transaction</a>
+                    
+
+                    <a href="{{ url_for('hire_staff') }}"  class="list-group-item list-group-item-action">Hire Staff</a>
+
+                
 
                     <a href="{{ url_for('view_blood') }}" class="list-group-item list-group-item-action">View Blood</a>
+
+                    <a href="{{ url_for('add_payment_transaction') }}" class="list-group-item list-group-item-action">View Transactions</a>
 
 
                 </div>
             </div>
             <div class="col-6">
                 <div class="list-group">
-                    <a href="{{ url_for('hire_staff') }}"  class="list-group-item list-group-item-action">Hire Staff</a>
-
-
                     <a href="{{ url_for('view_donors') }}" class="list-group-item list-group-item-action">View Donors</a>
 
                     <a href="{{ url_for('view_recipients') }}" class="list-group-item list-group-item-action">View Recipients</a>
+
+                    
+                    
+
+                  
 
                     <a href="{{ url_for('blood_cost') }}" class="list-group-item list-group-item-action">View Blood Cost</a>
 

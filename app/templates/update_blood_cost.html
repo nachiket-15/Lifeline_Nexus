@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Blood Cost - Blood Bank Management System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+</head>
+<body class="text-center bg-light">
+
+    <div class="container">
+        <h1 class="text-danger mt-5">Update Blood Cost</h1>
+
+        <form method="POST" action="{{ url_for('update_blood_cost') }}">
+            
+
+            <div class="mb-3">
+                <label for="blood_type" class="form-label">Blood Type</label>
+                <select class="form-select" id="blood_type" name="blood_type" required>
+                    <option value="" disabled selected>Choose Blood Type</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="cost" class="form-label">Blood Cost</label>
+                <input type="number" class="form-control" id="blood_cost" name="blood_cost" required>
+            </div>
+
+            <button type="submit" class="btn btn-danger">Update Blood Cost</button>
+        </form>
+    </div>
+
+    <!-- Add Bootstrap JS and Popper.js (if needed) here if you use Bootstrap components that require them -->
+
+</body>
+</html>

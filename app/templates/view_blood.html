@@ -1,38 +1,31 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Blood - Blood Bank Management System</title>
+    <title>View Blood Details - Blood Bank Management System</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
 </head>
 <body class="text-center bg-light">
 
     <div class="container">
-        <h1 class="text-danger mt-5">View Blood Stock</h1>
+        <h1 class="text-danger mt-5">View Blood Details</h1>
 
         <!-- Check if blood_data is not empty -->
         {% if blood_data %}
             <table class="table table-bordered mt-4">
                 <thead>
                     <tr>
-                        <th>Plasma Bag Number</th>
                         <th>Blood Type</th>
-                        <th>Blood Amount</th>
-                        <th>Platelets Count</th>
+                        <th>Total Amount (in ml)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Loop through each blood data and display it in the table -->
                     {% for data in blood_data %}
                         <tr>
-                            <td>{{ data.plasma_bag_number }}</td>
                             <td>{{ data.blood_type }}</td>
-                            <td>{{ data.blood_amount }}</td>
-                            <td>{{ data.platelets_count }}</td>
+                            <td>{{ data.total_amount }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

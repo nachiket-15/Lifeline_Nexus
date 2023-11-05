@@ -1,7 +1,8 @@
 from flask import Flask,render_template, request, redirect, url_for,session
 from app import app
-from app.utils import get_db_connection, authenticate_admin, authenticate_user, create_user_account,is_donor_id_unique,excepting,executeQuery
-
+from app.utils import get_db_connection, authenticate_admin, authenticate_user, create_user_account,is_donor_id_unique,excepting,executeQuery,executeQueryWithLastID,fetchOne
+from datetime import date
+import pymysql
 
 
 # app = Flask(__name__)
@@ -110,35 +111,58 @@ def create_account():
 
 
 
-
-
-
-
-
 @app.route('/add_donor', methods=['GET', 'POST'])
 def add_donor():
     if request.method == 'POST':
-        donor_id = request.form['donor_id']  
         date_of_donation = request.form['date_of_donation']
         donor_name = request.form['donor_name']
         blood_type = request.form['blood_type']
+        phone_no = request.form['phone_no']
+        address = request.form['address']
+        email = request.form['email']
+        body_weight = float(request.form['body_weight'])
+        age = int(request.form['age'])
+        health_conditions = 'health_conditions' in request.form 
+        blood_amount = float(request.form['blood_amount']) 
+        hemoglobin_level=int(request.form['hemoglobin_level'])
 
-        if is_donor_id_unique(donor_id):
-            query = "INSERT INTO DONORS (donor_name, blood_type, date_of_donation) VALUES (%s, %s, %s)"
-            values = (donor_name, blood_type, date_of_donation)
-            executeQuery(query, values)
-            return render_template('success.html', success_message="Donor added successfully!")
-        else:
-            return render_template('error.html', error_message="Donor ID already taken. Choose a new unique Donor ID.")
+        if not health_conditions:
+            return render_template('error.html', error_message="Sorry, the donor is not eligible for donation due to certain health conditions.")
+
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+
+           # Insert donor information into DONORS table
+            donor_query = "INSERT INTO DONORS (donor_name, blood_type, date_of_donation, phone_no, address, email, body_weight, age, health_condition, blood_amount, hemoglobin_level) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            donor_values = (donor_name, blood_type, date_of_donation, phone_no, address, email, body_weight, age, health_conditions, blood_amount, hemoglobin_level)
+
+            cur.execute(donor_query, donor_values)
+
+            # Get the last inserted donor_id
+            if cur.lastrowid:
+                donor_id = cur.lastrowid
+            else:
+                donor_id = None
+
+            # Insert blood donation information into BLOOD_UNITS table
+            blood_unit_query = "INSERT INTO BLOOD_UNITS (donor_id, collection_date, expiry_date, blood_type, blood_amount) VALUES (%s, %s, DATE_ADD(%s, INTERVAL 42 DAY), %s, %s)"
+            blood_unit_values = (donor_id, date_of_donation, date_of_donation, blood_type, blood_amount)
+            cur.execute(blood_unit_query, blood_unit_values)
+
+            # Commit changes and close the connection
+            conn.commit()
+            cur.close()
+            conn.close()
+
+            return render_template('success.html', success_message="Donor and Blood Donation added successfully!")
+
+        except pymysql.Error as e:
+            print(f"MySQL Error: {e}")
+            return render_template('error.html', error_message='A MySQL error occurred while adding the donor and blood donation.')
+
 
     return render_template('add_donor.html')
-
-
-
-
-
-
-
 
 
 
@@ -213,22 +237,31 @@ def add_plasma_details():
 
 
 
-
-
-@app.route('/add_blood_cost', methods=['GET', 'POST'])
-def add_blood_cost():
+@app.route('/update_blood_cost', methods=['GET', 'POST'])
+def update_blood_cost():
     if request.method == 'POST':
-        plasma_bag_number = request.form['plasma_bag_number']
-        cost = request.form['cost']
+        blood_type = request.form['blood_type']
+        blood_cost = request.form['blood_cost']
 
-        query = "INSERT INTO BLOOD_COST(plasma_bag_number, cost) VALUES (%s, %s)"
-        values = (plasma_bag_number, cost)
-        executeQuery(query, values)
+        # Check if blood_type exists
+        existing_query = "SELECT * FROM BLOOD_COST WHERE blood_type = %s"
+        existing_values = (blood_type,)
+        existing_record = fetchOne(existing_query, existing_values)
 
-        print("Blood cost added successfully!")
+        if existing_record:
+            # Update the existing record
+            update_query = "UPDATE BLOOD_COST SET cost = %s WHERE blood_type = %s"
+            update_values = (blood_cost, blood_type)
+            executeQuery(update_query, update_values)
+            print("Blood cost updated successfully!")
+        else:
+            # Insert a new record
+            insert_query = "INSERT INTO BLOOD_COST(blood_type, cost) VALUES (%s, %s)"
+            insert_values = (blood_type, blood_cost)
+            executeQuery(insert_query, insert_values)
+            print("Blood cost added successfully!")
 
-    return render_template('add_blood_cost.html')
-
+    return render_template('update_blood_cost.html')
 
 
 
@@ -261,20 +294,24 @@ def add_payment_transaction():
 @app.route('/view_blood')
 def view_blood():
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
+        con = get_db_connection()
+        cur = con.cursor()
 
-        query = "SELECT * FROM BLOOD"
-        cur.execute(query)  
+        today = date.today()
+
+        query = "SELECT blood_type, SUM(blood_amount) AS total_amount FROM BLOOD_UNITS GROUP BY blood_type"
+        cur.execute(query)
         blood_data = cur.fetchall()
 
         cur.close()
-        conn.close()
+        con.close()
 
         return render_template('view_blood.html', blood_data=blood_data)
     except Exception as e:
-        print(e)
+        print(f"Error: {e}")
         return render_template('error.html', error_message='An error occurred.')
+
+
 
 
 
@@ -287,9 +324,8 @@ def blood_cost():
         # Using 'with' statement for context management
         with get_db_connection() as conn, conn.cursor() as cur:
             query = """
-                SELECT bc.plasma_bag_number, bc.cost, b.blood_type
+                SELECT bc.blood_type, bc.cost
                 FROM BLOOD_COST bc
-                JOIN BLOOD b ON bc.plasma_bag_number = b.plasma_bag_number
             """
             cur.execute(query)
             blood_cost_data = cur.fetchall()
@@ -302,8 +338,9 @@ def blood_cost():
         # Log the exception
         app.logger.error(f"An error occurred: {e}")
 
-        # Render an error template
+        
         return render_template('error.html', error_message='An error occurred.')
+
 
 
 
@@ -322,24 +359,27 @@ def supervisors():
 
 
 
-
 @app.route('/view_donors')
 def view_donors():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
 
-        query = "SELECT * FROM DONORS"
-        cur.execute(query)  
+        query = "SELECT donor_id, donor_name, blood_type, date_of_donation,blood_amount FROM DONORS"
+        cur.execute(query)
         donor_data = cur.fetchall()
+
+        # print(donor_data)  # Add this line for debugging
 
         cur.close()
         conn.close()
 
         return render_template('view_donors.html', donor_data=donor_data)
     except Exception as e:
-        print(e)
+        # print(f"Error: {e}")  # Add this line for debugging
         return render_template('error.html', error_message='An error occurred.')
+
+
 
 
 
