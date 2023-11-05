@@ -62,12 +62,14 @@ CREATE TABLE `DONORS` (
   `age` INT(11) NOT NULL,
   `hemoglobin_level` INT NOT NULL,
   `health_condition` BOOLEAN NOT NULL,
-  `blood_amount` DECIMAL(5,2) NOT NULL,
+  `blood_amount` DECIMAL(8,2) NOT NULL,
   PRIMARY KEY (`donor_id`,`date_of_donation`),
   CHECK (`body_weight` > 45 AND `age` BETWEEN 18 AND 65 AND `hemoglobin_level` > 13)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-select * from DONORS;
+-- 
+
+
 
 
 
@@ -78,13 +80,13 @@ CREATE TABLE `BLOOD_UNITS` (
   `collection_date` DATE NOT NULL,
   `expiry_date` DATE NOT NULL,
   `blood_type` VARCHAR(10) NOT NULL,
-  `blood_amount` DECIMAL(5,2) NOT NULL,
+  `blood_amount` DECIMAL(8,2) NOT NULL,
   PRIMARY KEY (`blood_unit_id`),
   FOREIGN KEY (`donor_id`) REFERENCES `DONORS` (`donor_id`),
   CHECK (`expiry_date` = DATE_ADD(`collection_date`, INTERVAL 42 DAY))
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-select * from BLOOD_UNITS;
+-- select * from BLOOD_UNITS;
 
 
 CREATE TABLE `BLOOD_COST` (
@@ -95,15 +97,30 @@ CREATE TABLE `BLOOD_COST` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+CREATE TABLE BLOOD_AMOUNT (
+    blood_type VARCHAR(10) PRIMARY KEY,
+    blood_amount DECIMAL(8,2) DEFAULT 0.0 NOT NULL
+);
+
+
+INSERT INTO BLOOD_AMOUNT (blood_type, blood_amount) VALUES
+    ('A+', 0.0),
+    ('B+', 0.0),
+    ('AB+', 0.0),
+    ('O+', 0.0),
+    ('A-', 0.0),
+    ('B-', 0.0),
+    ('AB-', 0.0),
+    ('O-', 0.0);
 
 
 
-
+-- select * from BLOOD_AMOUNT;
 
 -- Tables with foreign key references
 DROP TABLE IF EXISTS `RECIPIENT`;
 CREATE TABLE `RECIPIENT` (
-  `rec_id` int(11) NOT NULL,
+  `rec_id` int(11) NOT NULL AUTO_INCREMENT,
   `blood_type` varchar(10) DEFAULT NULL,
   `quantity_needed` int(11) DEFAULT NULL,
   `date_of_request` date DEFAULT NULL,
@@ -123,17 +140,6 @@ CREATE TABLE `RECIPIENT` (
 
 
 
-
-
-DROP TABLE IF EXISTS `REGISTERS`;
-CREATE TABLE `REGISTERS` (
-  `donor_id` int(11) DEFAULT NULL,
-  `rec_id` int(11) DEFAULT NULL,
-  KEY `rec_id` (`rec_id`),
-  KEY `donor_id` (`donor_id`),
-  CONSTRAINT `REGISTERS_ibfk_1` FOREIGN KEY (`rec_id`) REFERENCES `RECIPIENT` (`rec_id`),
-  CONSTRAINT `REGISTERS_ibfk_2` FOREIGN KEY (`donor_id`) REFERENCES `DONORS` (`donor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 
@@ -161,37 +167,6 @@ INSERT INTO `STAFF` VALUES (1,'Def Gef','Sandy','23 A','9090909090',23411);
 
 
 
-DROP TABLE IF EXISTS `COMPANION`;
-CREATE TABLE `COMPANION` (
-  `donor_id` int(11) DEFAULT NULL,
-  `companion_name` varchar(10) DEFAULT NULL,
-  `relationship` varchar(10) DEFAULT NULL,
-  KEY `donor_id` (`donor_id`),
-  CONSTRAINT `COMPANION_ibfk_1` FOREIGN KEY (`donor_id`) REFERENCES `DONORS` (`donor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
--- No need to lock/unlock tables for this operation
-
-
-
-
-
-
-
-DROP TABLE IF EXISTS `DONOR_INFO`;
-CREATE TABLE `DONOR_INFO` (
-  `donor_id` int(11) NOT NULL,
-  `fname` varchar(30) NOT NULL,
-  `lName` varchar(30) DEFAULT NULL,
-  `blood_type` varchar(30) DEFAULT NULL,
-  `phone_no` varchar(11) DEFAULT NULL,
-  `dOB` date DEFAULT NULL,
-  `age` int(11) DEFAULT NULL,
-  `sex` varchar(10) DEFAULT NULL,
-  `address` char(30) DEFAULT NULL,
-  PRIMARY KEY (`donor_id`),
-  CONSTRAINT `DONOR_INFO_ibfk_1` FOREIGN KEY (`donor_id`) REFERENCES `DONORS` (`donor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
--- No need to lock/unlock tables for this operation
 
 
 
@@ -201,17 +176,6 @@ CREATE TABLE `DONOR_INFO` (
 
 
 
-
-
-
-DROP TABLE IF EXISTS `PAYMENT_TRANSACTION`;
-CREATE TABLE `PAYMENT_TRANSACTION` (
-  `rec_id` int(11) DEFAULT NULL,
-  `payment_amt` int(11) DEFAULT NULL,
-  KEY `rec_id` (`rec_id`),
-  CONSTRAINT `PAYMENT_TRANSACTION_ibfk_1` FOREIGN KEY (`rec_id`) REFERENCES `RECIPIENT` (`rec_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
--- No need to lock/unlock tables for this operation
 
 
 
