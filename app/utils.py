@@ -7,7 +7,7 @@ def get_db_connection():
         con = pymysql.connect(
             host='localhost',
             user='root',
-            password='pass',
+            password='pass@',
             database='PLASMABANK',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -146,10 +146,23 @@ def executeQuery(query, values=None):
 
 
 
-def calculate_age(birth_date):
-    days_in_year = 365.2425
-    age = int((date.today() - birth_date).days / days_in_year)
+def calculate_age(dob):
+    # Convert dob to datetime object
+    dob_datetime = datetime.combine(dob, datetime.min.time())
+    
+    # Get current date
+    current_date = datetime.now()
+
+    # Calculate age
+    age = current_date.year - dob_datetime.year - ((current_date.month, current_date.day) < (dob_datetime.month, dob_datetime.day))
+
     return age
+
+
+
+
+
+
 
 
 

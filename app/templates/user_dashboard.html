@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard - Blood Bank Management System</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <style>
+        a{
+            margin-bottom: 9px;
+        }
+    </style>
 </head>
 <body class="text-center bg-light">
 
@@ -12,20 +17,16 @@
         <h1 class="text-danger mt-5">User Dashboard</h1>
 
         <div class="row mt-5">
-            <div class="col-3">
-                <div class="list-group">
-
-                    <a href="{{ url_for('add_donor') }}" class="list-group-item list-group-item-action">Donate Blood</a>
-
-                    <a href="{{ url_for('view_blood') }}" class="list-group-item list-group-item-action">View Available Blood</a>
-
+            <div class="col-4 mx-auto">
+                <div class="list-group text-center">
+                    <a href="{{ url_for('add_donor_user') }}" class="list-group-item list-group-item-action">Donate Blood</a>
+                    <a href="{{ url_for('view_blood_user') }}" class="list-group-item list-group-item-action">View Available Blood</a>
                     <a href="{{ url_for('user_request') }}" class="list-group-item list-group-item-action" >Request for Blood</a>
-
                     <a href="{{ url_for('request_status') }}" class="list-group-item list-group-item-action" >Request Status</a>
-
                     <a href="{{ url_for('index')}}" class="list-group-item list-group-item-action" >Log Out</a>
-
                 </div>
+            </div>
+            
             </div>
             <div class="col-9">
                 <div id="content"></div>
@@ -33,12 +34,7 @@
         </div>
     </div>
 
-    <script>
-        function loadContent(funcName) {
-            // You can use AJAX or other methods to load content dynamically based on the button clicked
-            document.getElementById('content').innerHTML = '<h2 class="text-danger">' + funcName + ' Content Goes Here</h2>';
-        }
-    </script>
+    
 
     <!-- Add Bootstrap JS and Popper.js (if needed) here if you use Bootstrap components that require them -->
 

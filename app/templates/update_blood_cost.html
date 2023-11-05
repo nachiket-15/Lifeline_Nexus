@@ -5,11 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Blood Cost - Blood Bank Management System</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <style>
+        .top-left {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+        }
+    </style>
 </head>
 <body class="text-center bg-light">
 
     <div class="container">
         <h1 class="text-danger mt-5">Update Blood Cost</h1>
+
+        <a href="{{ url_for('admin_dashboard') }}" class="top-left">
+            <img src="{{ url_for('static', filename='home.png') }}" alt="Home" style="width: 60px; height: 60px; ">
+        </a>
 
         <form method="POST" action="{{ url_for('update_blood_cost') }}">
             

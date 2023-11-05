@@ -26,11 +26,25 @@
             padding: 20px;
             min-height: 200px;
         }
+
+        a{
+            margin-bottom: 9px;
+        }
+        
+        .top-left {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+        }
+    
     </style>
 </head>
 <body class="text-center bg-light">
 
     <div class="container-fluid">
+        <a href="{{ url_for('index') }}" class="top-left">
+            <img src="{{ url_for('static', filename='home.png') }}" alt="Home" style="width: 60px; height: 60px; ">
+        </a>
         <h1 class="text-danger mt-5">Admin Dashboard</h1>
 
         <div class="row mt-5">
@@ -50,7 +64,7 @@
 
                 
 
-                    <a href="{{ url_for('view_blood') }}" class="list-group-item list-group-item-action">View Blood</a>
+                    <a href="{{ url_for('view_blood') }}" class="list-group-item list-group-item-action">View Available Blood</a>
 
                     <a href="{{ url_for('add_payment_transaction') }}" class="list-group-item list-group-item-action">View Transactions</a>
 

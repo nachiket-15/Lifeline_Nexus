@@ -1,11 +1,13 @@
 from flask import Flask,render_template, request, redirect, url_for,session
 from app import app
-from app.utils import get_db_connection, authenticate_admin, authenticate_user, create_user_account,is_donor_id_unique,excepting,executeQuery,executeQueryWithLastID,fetchOne
-from datetime import date
+from flask_mail import Mail,Message
+from app.utils import get_db_connection, authenticate_admin, authenticate_user, create_user_account,is_donor_id_unique,excepting,executeQuery,executeQueryWithLastID,fetchOne,calculate_age
+from datetime import date,datetime
 import pymysql
 
+from app import app, mail
 
-# app = Flask(__name__)
+
 app.secret_key = 'your_secret_key' 
 
 
@@ -78,10 +80,8 @@ def user_login():
 
 @app.route('/user_dashboard')
 def user_dashboard():
-    if current_user.is_authenticated:
-        return render_template('user_dashboard.html', username=current_user.username)
-    else:
-        return redirect(url_for('user_login'))
+    return render_template('user_dashboard.html',current_user_is_admin=False)
+    
 
 
 
@@ -103,8 +103,6 @@ def create_account():
             return render_template('create_account.html', error="Error creating account")
 
     return render_template('create_account.html')
-
-
 
 
 
@@ -150,6 +148,15 @@ def add_donor():
             blood_unit_values = (donor_id, date_of_donation, date_of_donation, blood_type, blood_amount)
             cur.execute(blood_unit_query, blood_unit_values)
 
+
+            blood_amount_query = "UPDATE BLOOD_AMOUNT SET blood_amount = blood_amount + %s WHERE blood_type = %s"
+            increment_amount = blood_amount
+            blood_amount_values = (increment_amount, blood_type)
+            executeQuery(blood_amount_query, blood_amount_values)
+
+
+
+
             # Commit changes and close the connection
             conn.commit()
             cur.close()
@@ -166,42 +173,151 @@ def add_donor():
 
 
 
+
+
+
+
+
+
+
+
+
+@app.route('/add_donor_user', methods=['GET', 'POST'])
+def add_donor_user():
+    if request.method == 'POST':
+        date_of_donation = request.form['date_of_donation']
+        donor_name = request.form['donor_name']
+        blood_type = request.form['blood_type']
+        phone_no = request.form['phone_no']
+        address = request.form['address']
+        email = request.form['email']
+        body_weight = float(request.form['body_weight'])
+        age = int(request.form['age'])
+        health_conditions = 'health_conditions' in request.form 
+        blood_amount = float(request.form['blood_amount']) 
+        hemoglobin_level=int(request.form['hemoglobin_level'])
+
+        if not health_conditions:
+            return render_template('error.html', error_message="Sorry, the donor is not eligible for donation due to certain health conditions.")
+
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+
+           # Insert donor information into DONORS table
+            donor_query = "INSERT INTO DONORS (donor_name, blood_type, date_of_donation, phone_no, address, email, body_weight, age, health_condition, blood_amount, hemoglobin_level) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            donor_values = (donor_name, blood_type, date_of_donation, phone_no, address, email, body_weight, age, health_conditions, blood_amount, hemoglobin_level)
+
+            cur.execute(donor_query, donor_values)
+
+            # Get the last inserted donor_id
+            if cur.lastrowid:
+                donor_id = cur.lastrowid
+            else:
+                donor_id = None
+
+            # Insert blood donation information into BLOOD_UNITS table
+            blood_unit_query = "INSERT INTO BLOOD_UNITS (donor_id, collection_date, expiry_date, blood_type, blood_amount) VALUES (%s, %s, DATE_ADD(%s, INTERVAL 42 DAY), %s, %s)"
+            blood_unit_values = (donor_id, date_of_donation, date_of_donation, blood_type, blood_amount)
+            cur.execute(blood_unit_query, blood_unit_values)
+
+
+            blood_amount_query = "UPDATE BLOOD_AMOUNT SET blood_amount = blood_amount + %s WHERE blood_type = %s"
+            increment_amount = blood_amount
+            blood_amount_values = (increment_amount, blood_type)
+            executeQuery(blood_amount_query, blood_amount_values)
+
+
+
+
+            # Commit changes and close the connection
+            conn.commit()
+            cur.close()
+            conn.close()
+
+            return render_template('success.html', success_message="Donor and Blood Donation added successfully!")
+
+        except pymysql.Error as e:
+            print(f"MySQL Error: {e}")
+            return render_template('error.html', error_message='A MySQL error occurred while adding the donor and blood donation.')
+
+
+    return render_template('add_donor_user.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @app.route('/add_recipient', methods=['GET', 'POST'])
 def add_recipient():
     if request.method == 'POST':
         try:
             row = {}
             row["recipient_name"] = request.form.get("recipient_name")
-            row["rec_id"] = int(request.form.get("rec_id"))
             row["blood_type"] = request.form.get("blood_type")
             row["quantity_needed"] = int(request.form.get("quantity_needed"))
             row["date_of_request"] = request.form.get("date_of_request")
             row["dOB"] = request.form.get("dob")
-            row["age"] = calculateAge(datetime.strptime(row["dOB"], '%Y-%m-%d'))
+            row["age"] = calculate_age(datetime.strptime(row["dOB"], '%Y-%m-%d'))
             row["sex"] = request.form.get("sex")
             row["address"] = request.form.get("address")
 
-            query = "INSERT INTO RECIPIENT(rec_id, blood_type, quantity_needed, date_of_request, recipient_name, dOB, age, sex, address) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            values = (row["rec_id"], row["blood_type"], row["quantity_needed"], row["date_of_request"], row["recipient_name"], row["dOB"], row["age"], row["sex"], row["address"])
+            # Check if the required blood quantity is available
+            check_query = "SELECT blood_amount FROM BLOOD_AMOUNT WHERE blood_type = %s"
+            check_values = (row["blood_type"],)
+            result = fetchOne(check_query, check_values)
 
-            executeQuery(query, values)
+            total_available_blood = result['blood_amount'] if result and 'blood_amount' in result else 0
 
-            print("Inserted Into Database")
+            if total_available_blood >= row["quantity_needed"]:
+                # Proceed with the insertion into RECIPIENT table
+                query = "INSERT INTO RECIPIENT(blood_type, quantity_needed, date_of_request, recipient_name, dOB, age, sex, address) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                values = (row["blood_type"], row["quantity_needed"], row["date_of_request"], row["recipient_name"], row["dOB"], row["age"], row["sex"], row["address"])
+                executeQuery(query, values)
+
+                # Update the available blood quantity in BLOOD_AMOUNT table
+                update_query = "UPDATE BLOOD_AMOUNT SET blood_amount = blood_amount - %s WHERE blood_type = %s"
+                update_values = (row["quantity_needed"], row["blood_type"])
+                affected_rows = executeQuery(update_query, update_values)
+
+                if isinstance(affected_rows, list) and affected_rows:
+                    if affected_rows[0] > 0:
+                        print(f"Blood assigned successfully for Recipient: {row['recipient_name']}")
+                        success_message = f"Blood assigned successfully for Recipient: {row['recipient_name']}"
+                        return render_template('success.html', success_message=success_message)
+                    else:
+                        print(f"No available blood for Recipient: {row['recipient_name']}")
+                        error_message = f"No available blood for Recipient: {row['recipient_name']}"
+                        return render_template('error.html', error_message=error_message)
+                else:          
+                    error_message = f"Unable to determine affected rows after updating BLOOD_AMOUNT."
+                    print(f"Error: {error_message}")
+                    return render_template('error.html', error_message=error_message)
+
+            else:
+                error_message = f"Insufficient blood available for blood type {row['blood_type']}"
+                print(f"Error: {error_message}")
+                return render_template('error.html', error_message=error_message)
 
         except Exception as e:
-            print(e)
-            return render_template('error.html', error_message=str(e))
+            import traceback
+            print(f"Error: {e}")
+            print(traceback.format_exc())
+            return render_template('error.html', error_message='An error occurred.')
 
     return render_template('add_recipient.html')
-
-
-
-
-
-
-
-
-
 
 
 
@@ -299,7 +415,7 @@ def view_blood():
 
         today = date.today()
 
-        query = "SELECT blood_type, SUM(blood_amount) AS total_amount FROM BLOOD_UNITS GROUP BY blood_type"
+        query = "SELECT blood_type, blood_amount  FROM BLOOD_AMOUNT "
         cur.execute(query)
         blood_data = cur.fetchall()
 
@@ -311,6 +427,30 @@ def view_blood():
         print(f"Error: {e}")
         return render_template('error.html', error_message='An error occurred.')
 
+
+
+
+
+
+@app.route('/view_blood_user')
+def view_blood_user():
+    try:
+        con = get_db_connection()
+        cur = con.cursor()
+
+        today = date.today()
+
+        query = "SELECT blood_type, blood_amount  FROM BLOOD_AMOUNT "
+        cur.execute(query)
+        blood_data = cur.fetchall()
+
+        cur.close()
+        con.close()
+
+        return render_template('view_blood_user.html', blood_data=blood_data)
+    except Exception as e:
+        print(f"Error: {e}")
+        return render_template('error.html', error_message='An error occurred.')
 
 
 
@@ -349,9 +489,6 @@ def blood_cost():
 
 
 
-@app.route('/supervisors')
-def supervisors():
-    return render_template('supervisors.html')
 
 
 
@@ -368,8 +505,6 @@ def view_donors():
         query = "SELECT donor_id, donor_name, blood_type, date_of_donation,blood_amount FROM DONORS"
         cur.execute(query)
         donor_data = cur.fetchall()
-
-        # print(donor_data)  # Add this line for debugging
 
         cur.close()
         conn.close()
@@ -505,12 +640,9 @@ def admin_requests():
 
 @app.route('/admin_approve/<int:request_id>')
 def admin_approve(request_id):
-    # Update the status of the request to 'Approved' in the database
-    # (You should use placeholders to prevent SQL injection)
     query = "UPDATE REQUESTS SET status='Approved' WHERE request_id=%s"
     values = (request_id,)
     executeQuery(query,values)
-    # Execute the query and handle the database operation
     return redirect(url_for('admin_requests'))
 
 
@@ -518,34 +650,42 @@ def admin_approve(request_id):
 
 @app.route('/admin_reject/<int:request_id>')
 def admin_reject(request_id):
-    # Update the status of the request to 'Rejected' in the database
-    # (You should use placeholders to prevent SQL injection)
+    
     query = "UPDATE REQUESTS SET status='Rejected' WHERE request_id=%s"
     values = (request_id,)
     executeQuery(query,values)
-    # Execute the query and handle the database operation
     return redirect(url_for('admin_requests'))
 
 
 
 
 
+# routes.py
+
+
 
 @app.route('/user_request', methods=['GET', 'POST'])
 def user_request():
     if request.method == 'POST':
-        username =session.get('username')
+        username = session.get('username')
         blood_type = request.form['blood_type']
         quantity_needed = int(request.form['quantity_needed'])
         date_of_request = request.form['date_of_request']
 
         query = "INSERT INTO `REQUESTS` (username, blood_type, quantity_needed, date_of_request) VALUES (%s, %s, %s, %s)"
         values = (username, blood_type, quantity_needed, date_of_request)
-        
-        success = executeQuery(query, values)  
 
-        return render_template('success.html', success_message="Blood donation request submitted successfully!")
+        success = executeQuery(query, values)
+
+        # Send email to admin
+        admin_email = 'developernachiket@gmail.com'  # Replace with your admin's email
+        subject = f"Blood Donation Request from {username}"
+        body = f"A user with username {username} has requested {quantity_needed} ml of blood type {blood_type} on {date_of_request}."
         
+        msg = Message(subject=subject, recipients=[admin_email], body=body)
+        mail.send(msg)
+
+        return render_template('success2.html', success_message="Blood donation request submitted successfully!")
 
     return render_template('user_request.html')
 
