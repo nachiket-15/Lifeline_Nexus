@@ -3,7 +3,7 @@
 ## Introduction
 Welcome to Lifeline Nexus, a comprehensive Blood Bank Management System designed to streamline the process of blood donation and assistance. This system is built with a focus on providing efficient management for administrators and a user-friendly experience for donors and recipients.
 
-![Main Page](image_url)
+![Main Page]([image_url](https://github.com/nachiket-15/LifeLine_Nexus/blob/main/main_dash.png))
 
 ## Features
 
@@ -20,7 +20,7 @@ Welcome to Lifeline Nexus, a comprehensive Blood Bank Management System designed
 
 4. **Health Conditions Check:**
    - Intelligent system ensures donors meet required health standards.
-![Main Page](image_url)
+![Admin Page](https://github.com/nachiket-15/LifeLine_Nexus/blob/main/admin_dash.png)
 ### For Users:
 
 1. **User-Friendly Interface:**
@@ -37,7 +37,7 @@ Welcome to Lifeline Nexus, a comprehensive Blood Bank Management System designed
 
 5. **Email Notifications:**
    - Automatic alerts to admins for prompt response.
-![Main Page](image_url)
+![User Page](https://github.com/nachiket-15/LifeLine_Nexus/blob/main/user_dash.png)
 ## Getting Started
 
 1. **Clone the Repository:**
