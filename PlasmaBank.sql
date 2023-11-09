@@ -70,9 +70,6 @@ CREATE TABLE `DONORS` (
 -- 
 
 
-
-
-
 DROP TABLE IF EXISTS `BLOOD_UNITS`;
 CREATE TABLE `BLOOD_UNITS` (
   `blood_unit_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -85,8 +82,6 @@ CREATE TABLE `BLOOD_UNITS` (
   FOREIGN KEY (`donor_id`) REFERENCES `DONORS` (`donor_id`),
   CHECK (`expiry_date` = DATE_ADD(`collection_date`, INTERVAL 42 DAY))
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- select * from BLOOD_UNITS;
 
 
 CREATE TABLE `BLOOD_COST` (
@@ -115,8 +110,6 @@ INSERT INTO BLOOD_AMOUNT (blood_type, blood_amount) VALUES
 
 
 
--- select * from BLOOD_AMOUNT;
-
 -- Tables with foreign key references
 DROP TABLE IF EXISTS `RECIPIENT`;
 CREATE TABLE `RECIPIENT` (
@@ -131,17 +124,6 @@ CREATE TABLE `RECIPIENT` (
   `address` char(30) DEFAULT NULL,
   PRIMARY KEY (`rec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -165,27 +147,6 @@ INSERT INTO `STAFF` VALUES (1,'Def Gef','Sandy','23 A','9090909090',23411);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 DROP TABLE IF EXISTS `RECIEVES`;
 CREATE TABLE `RECIEVES` (
   `emp_id` int(11) DEFAULT NULL,
@@ -196,11 +157,6 @@ CREATE TABLE `RECIEVES` (
   CONSTRAINT `RECIEVES_ibfk_2` FOREIGN KEY (`emp_id`) REFERENCES `STAFF` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 -- No need to lock/unlock tables for this operation
-
-
-
-
-
 
 
 
@@ -216,12 +172,6 @@ CREATE TABLE REQUESTS (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `REQUESTS` (username, blood_type, quantity_needed, date_of_request) VALUES ("ved", 'O+', 5, '2023-11-03');
-
-
-
-
-
-
 
 
 
