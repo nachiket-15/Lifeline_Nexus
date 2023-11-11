@@ -1,7 +1,10 @@
-from flask import Flask,render_template, request, redirect, url_for,session
+from flask import Flask,render_template, request, redirect, url_for,session,flash,get_flashed_messages
 from app import app
 from flask_mail import Mail,Message
-from app.utils import get_db_connection, authenticate_admin, authenticate_user, create_user_account,is_donor_id_unique,excepting,executeQuery,executeQueryWithLastID,fetchOne,calculate_age
+
+from app.utils import get_db_connection, authenticate_admin, authenticate_user, create_user_account,is_donor_id_unique,excepting,executeQuery,executeQueryWithLastID,fetchOne,calculate_age,fetch_user_email_from_db
+
+
 from datetime import date,datetime
 import pymysql
 
@@ -94,9 +97,10 @@ def user_dashboard():
 def create_account():
     if request.method == 'POST':
         new_username = request.form['new_username']
+        new_email=request.form['new_email']
         new_password = request.form['new_password']
 
-        success = create_user_account(new_username, new_password)
+        success = create_user_account(new_username,new_email,new_password)
         if success:
             return redirect(url_for('user_login'))
         else:
@@ -243,10 +247,6 @@ def add_donor_user():
 
 
     return render_template('add_donor_user.html')
-
-
-
-
 
 
 
@@ -626,13 +626,26 @@ def view_staff():
 
 @app.route('/admin_requests')
 def admin_requests():
-    # Retrieve requests from the database
-    # (You should use placeholders to prevent SQL injection)
+    
     query = "SELECT * FROM REQUESTS"
-    # Assuming executeQuery returns the fetched data, modify it accordingly
     requests = executeQuery(query)
+    messages = get_flashed_messages()
 
-    return render_template('admin_requests.html', requests=requests)
+    return render_template('admin_requests.html', requests=requests, messages=messages)
+
+
+
+
+
+
+def send_email(to, subject, body):
+    try:
+        msg = Message(subject, recipients=[to], body=body)
+        mail.send(msg)
+        return True
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return False
 
 
 
@@ -640,10 +653,65 @@ def admin_requests():
 
 @app.route('/admin_approve/<int:request_id>')
 def admin_approve(request_id):
-    query = "UPDATE REQUESTS SET status='Approved' WHERE request_id=%s"
-    values = (request_id,)
-    executeQuery(query,values)
-    return redirect(url_for('admin_requests'))
+    try:
+        # Get current blood type and requested amount
+        query_info = "SELECT username, blood_type, quantity_needed, status FROM REQUESTS WHERE request_id=%s"
+        values_info = (request_id,)
+        result_info = fetchOne(query_info, values_info)
+
+        if result_info:
+            username = result_info['username']
+            blood_type = result_info['blood_type']
+            quantity_needed = result_info['quantity_needed']
+            request_status = result_info['status']
+
+            # Get current blood amount
+            query_amount = "SELECT blood_amount FROM BLOOD_AMOUNT WHERE blood_type=%s"
+            values_amount = (blood_type,)
+            result_amount = fetchOne(query_amount, values_amount)
+
+            if result_amount and result_amount['blood_amount'] >= quantity_needed:
+
+
+                # Update request status to 'Approved'
+                query_update = "UPDATE REQUESTS SET status='Approved' WHERE request_id=%s"
+                values_update = (request_id,)
+                executeQuery(query_update, values_update)
+
+
+
+                # Reduce the quantity from BLOOD_AMOUNT table
+                query_reduce_blood = "UPDATE BLOOD_AMOUNT SET blood_amount = blood_amount - %s WHERE blood_type = %s"
+                values_reduce_blood = (quantity_needed, blood_type)
+                executeQuery(query_reduce_blood, values_reduce_blood)
+
+
+
+                # Send email to the user
+                user_email = fetch_user_email_from_db(username)
+                if user_email:
+                    subject = 'Blood Request Status'
+                    if request_status == 'Approved':
+                        body = f"Your blood request with ID {request_id} has been approved. Kindly visit Blood Bank as soon as possible !"
+                    
+                    send_email(user_email, subject, body)
+
+                    flash('Request approved successfully. Email sent to the user.', 'success')
+                else:
+                    flash('User email not found. Email not sent.', 'warning')
+            else:
+                flash(f"Insufficient blood available for blood type {blood_type}. Current amount: {result_amount['blood_amount']}", 'danger')
+        else:
+            flash('Invalid request ID.', 'danger')
+
+    except Exception as e:
+        import traceback
+        print(f"Error in admin_approve: {e}")
+        print(traceback.format_exc())
+        flash('An error occurred.', 'danger')
+
+    return redirect(url_for('admin_requests', messages=get_flashed_messages()))
+
 
 
 
@@ -660,7 +728,6 @@ def admin_reject(request_id):
 
 
 
-# routes.py
 
 
 

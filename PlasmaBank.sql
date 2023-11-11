@@ -22,14 +22,15 @@ USE `PLASMABANK`;
 DROP TABLE IF EXISTS `USER_ACCOUNTS`;
 CREATE TABLE `USER_ACCOUNTS` (
   `username` varchar(30) NOT NULL,
+  `email` varchar(50) NOT NULL,
   `password` varchar(30) NOT NULL,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-INSERT INTO `USER_ACCOUNTS` VALUES ('ved', 'ved');
-INSERT INTO `USER_ACCOUNTS` VALUES ('nachi', 'nachi');
-INSERT INTO `USER_ACCOUNTS` VALUES ('paras', 'paras');
+INSERT INTO `USER_ACCOUNTS` VALUES ('ved', 'vedgarudkar14@gmail.com', 'ved');
+INSERT INTO `USER_ACCOUNTS` VALUES ('nachi', 'nachiketdeshmukh123@gmail.com', 'nachi');
+INSERT INTO `USER_ACCOUNTS` VALUES ('paras', 'parasbhosale@gmail.com', 'paras');
 
 
 DROP TABLE IF EXISTS `ADMIN_ACCOUNTS`;
@@ -38,6 +39,7 @@ CREATE TABLE `ADMIN_ACCOUNTS` (
   `password` varchar(30) NOT NULL,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 -- Insert some example user accounts
 INSERT INTO `ADMIN_ACCOUNTS` VALUES ('admin', 'admin');
@@ -84,12 +86,16 @@ CREATE TABLE `BLOOD_UNITS` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+
+
 CREATE TABLE `BLOOD_COST` (
   `blood_type` VARCHAR(10) NOT NULL,
   `cost` DECIMAL(8,2) DEFAULT 1000.00,
   PRIMARY KEY (`blood_type`),
   CHECK (`cost` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 
 
 CREATE TABLE BLOOD_AMOUNT (

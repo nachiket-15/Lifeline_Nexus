@@ -5,22 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blood Donation Request</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+
+    <style>
+        .top-left {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+        }
+    </style>
+
+
 </head>
 <body class="text-center bg-light">
+
+
+    <a href="{{ url_for('user_dashboard') }}" class="top-left">
+        <img src="{{ url_for('static', filename='home.png') }}" alt="Home" style="width: 60px; height: 60px; ">
+    </a>
+
 
     <div class="container">
         <h1 class="text-danger mt-5">Blood Donation Request</h1>
 
         <!-- Blood donation request form -->
         <form method="POST" class="mt-4">
-
-            <!-- <div class="mb-3">
-                <label for="username" class="form-label">Enter your username</label>
-                <input type="text" class="form-control" name="username" id="username" required>
-            </div>
-             -->
-            
-
             
             <div class="mb-3">
                 <label for="blood_type" class="form-label">Enter Blood Type</label>

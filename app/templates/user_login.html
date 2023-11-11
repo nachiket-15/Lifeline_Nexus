@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Login - Blood Bank Management System</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    
+    
     <style>
         .top-left {
             position: absolute;
@@ -12,13 +14,18 @@
             left: 30px;
         }
     </style>
+
+
 </head>
 <body class="text-center bg-light">
 
     <div class="container">
+
         <a href="{{ url_for('index') }}" class="top-left">
             <img src="{{ url_for('static', filename='home.png') }}" alt="Home" style="width: 60px; height: 60px; ">
         </a>
+
+        
         <form class="form-signin" method="POST" action="{{ url_for('user_login') }}">
             <img class="mb-4" src="{{ url_for('static', filename='bloodbank.jpg') }}" alt="" width="72" height="72">
             <h1 class="h3 mb-3 font-weight-normal">User Login</h1>
