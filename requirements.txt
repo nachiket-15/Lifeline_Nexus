@@ -1,0 +1,11 @@
+# requirements.txt
+
+# Flask and Flask extensions
+Flask==2.0.2
+Flask-Mail==0.9.1
+
+# pymysql for MySQL database
+pymysql==1.0.2
+
+# Other dependencies
+
