@@ -63,23 +63,7 @@ Welcome to Lifeline Nexus, a comprehensive Blood Bank Management System designed
 5. **Access the Application:**
    - Visit [http://localhost:5000/](http://localhost:5000/) in your web browser to access Lifeline Nexus.
 
-## Directory Structure
 
-```plaintext
-|-- app
-|   |-- __init__.py
-|   |-- __pycache__
-|   |-- routes.py
-|   |-- static
-|   |-- templates
-|       |-- add_donor.html
-|       |-- admin_requests.html
-|       |-- ... (other HTML files)
-|-- database.sql
-|-- PlasmaBank.sql
-|-- README.md
-|-- run.py
-```
 
 ## Support and Contribution
 
