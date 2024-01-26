@@ -170,7 +170,7 @@ def add_donor():
 
         except pymysql.Error as e:
             print(f"MySQL Error: {e}")
-            return render_template('error.html', error_message='A MySQL error occurred while adding the donor and blood donation.')
+            return render_template('error.html', error_message='Donor Not Eligible.')
 
 
     return render_template('add_donor.html')
@@ -301,10 +301,10 @@ def add_recipient():
                         print(f"No available blood for Recipient: {row['recipient_name']}")
                         error_message = f"No available blood for Recipient: {row['recipient_name']}"
                         return render_template('error.html', error_message=error_message)
-                else:          
-                    error_message = f"Unable to determine affected rows after updating BLOOD_AMOUNT."
-                    print(f"Error: {error_message}")
-                    return render_template('error.html', error_message=error_message)
+                # else:          
+                #     error_message = f"Unable to determine affected rows after updating BLOOD_AMOUNT."
+                #     print(f"Error: {error_message}")
+                #     return render_template('error.html', error_message=error_message)
 
             else:
                 error_message = f"Insufficient blood available for blood type {row['blood_type']}"
@@ -626,12 +626,19 @@ def view_staff():
 
 @app.route('/admin_requests')
 def admin_requests():
-    
-    query = "SELECT * FROM REQUESTS"
-    requests = executeQuery(query)
-    messages = get_flashed_messages()
+    try:
+        query = "SELECT * FROM REQUESTS"
+        requests = executeQuery(query)
+        messages = get_flashed_messages()
 
-    return render_template('admin_requests.html', requests=requests, messages=messages)
+        return render_template('admin_requests.html', requests=requests, messages=messages)
+
+    except Exception as e:
+        import traceback
+        print(f"Error in admin_requests: {e}")
+        traceback.print_exc()
+        flash('An error occurred.', 'danger')
+        return redirect(url_for('error_page'))
 
 
 
@@ -691,6 +698,7 @@ def admin_approve(request_id):
                 user_email = fetch_user_email_from_db(username)
                 if user_email:
                     subject = 'Blood Request Status'
+                    body="Dear User , Your Request Has been taken into consideration , Kindly login your acccount to see the status of request \nThankyou!"
                     if request_status == 'Approved':
                         body = f"Your blood request with ID {request_id} has been approved. Kindly visit Blood Bank as soon as possible !"
                     
@@ -700,7 +708,9 @@ def admin_approve(request_id):
                 else:
                     flash('User email not found. Email not sent.', 'warning')
             else:
-                flash(f"Insufficient blood available for blood type {blood_type}. Current amount: {result_amount['blood_amount']}", 'danger')
+                flash(["Insufficient blood available for blood type {}. Current amount: {}".format(blood_type, result_amount["blood_amount"])], 'danger')
+
+
         else:
             flash('Invalid request ID.', 'danger')
 
@@ -710,7 +720,8 @@ def admin_approve(request_id):
         print(traceback.format_exc())
         flash('An error occurred.', 'danger')
 
-    return redirect(url_for('admin_requests', messages=get_flashed_messages()))
+    return redirect(url_for('admin_requests'))
+
 
 
 

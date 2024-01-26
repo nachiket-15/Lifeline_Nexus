@@ -40,7 +40,6 @@ CREATE TABLE `ADMIN_ACCOUNTS` (
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-
 -- Insert some example user accounts
 INSERT INTO `ADMIN_ACCOUNTS` VALUES ('admin', 'admin');
 
@@ -50,7 +49,7 @@ INSERT INTO `ADMIN_ACCOUNTS` VALUES ('admin', 'admin');
 
 
 
--- Tables without foreign key references
+
 DROP TABLE IF EXISTS `DONORS`;
 CREATE TABLE `DONORS` (
   `donor_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -90,7 +89,7 @@ CREATE TABLE `BLOOD_UNITS` (
 
 CREATE TABLE `BLOOD_COST` (
   `blood_type` VARCHAR(10) NOT NULL,
-  `cost` DECIMAL(8,2) DEFAULT 1000.00,
+  `cost` DECIMAL(8,2) DEFAULT 0.0,
   PRIMARY KEY (`blood_type`),
   CHECK (`cost` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -162,13 +161,12 @@ CREATE TABLE `RECIEVES` (
   CONSTRAINT `RECIEVES_ibfk_1` FOREIGN KEY (`rec_id`) REFERENCES `RECIPIENT` (`rec_id`),
   CONSTRAINT `RECIEVES_ibfk_2` FOREIGN KEY (`emp_id`) REFERENCES `STAFF` (`emp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
--- No need to lock/unlock tables for this operation
 
 
 
 CREATE TABLE REQUESTS (
   request_id INT AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(30),  -- Match the length with the primary key in USER_ACCOUNTS
+  username VARCHAR(30),  
   blood_type VARCHAR(10),
   quantity_needed INT,
   date_of_request DATE,

@@ -24,14 +24,19 @@
             <img src="{{ url_for('static', filename='home.png') }}" alt="Home" style="width: 60px; height: 60px; ">
         </a>
 
-         <!-- Insert flashed messages block here -->
-         {% with messages = get_flashed_messages() %}
-         {% if messages %}
-           <div class="alert alert-{{ messages[0] }}" role="alert" id="alerting">
-             {{ messages }}
-           </div>
-         {% endif %}
-       {% endwith %}
+     
+<!-- Insert flashed messages block here -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message[1] }}" role="alert" id="alerting">
+        {{ message[0] }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+
 
 
 
