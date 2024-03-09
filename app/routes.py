@@ -1,14 +1,19 @@
+# have included comment in routes regarding detailed Info of pymysql
+import pymysql
+
 from flask import Flask,render_template, request, redirect, url_for,session,flash,get_flashed_messages
-from app import app
+
+from app import app,mail
+
 from flask_mail import Mail,Message
 
 from app.utils import get_db_connection, authenticate_admin, authenticate_user, create_user_account,is_donor_id_unique,excepting,executeQuery,executeQueryWithLastID,fetchOne,calculate_age,fetch_user_email_from_db
 
 
 from datetime import date,datetime
-import pymysql
 
-from app import app, mail
+
+
 
 
 app.secret_key = 'your_secret_key' 
@@ -25,6 +30,20 @@ def index():
 
 
 
+'''
+
+@app.route()
+This decorator in flask is used to associate a URL with a particular view function in your application . In below case '/admin_login' (URL) is associated with a view function that handles both GET & POST Requests.
+
+admin_login() below is the corresponding view function
+
+This view function is associated with particular URL (here '/admin_login')
+
+
+When client requests a specific URL (/admin_login) from your Flask application , flask invokes corresponding view function to handle that request.
+
+'''
+
 
 @app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
@@ -39,6 +58,19 @@ def admin_login():
 
     return render_template('admin_login.html')
 
+
+
+'''
+"request" is an object provided by Flask itself. It is part of Flask framework and is used to access incoming request data, such as form data, query parameters, and headers, when handling HTTP requests.
+
+
+When a request is made to route -> '/admin_login' , flask will inspect (check) request method of incoming HTTP request and deteremines if it matches any of the methods specified in "methods" parameter 
+
+
+request.method: This attribute gives you access to the HTTP method of the request (e.g., 'GET', 'POST').
+request.form: This attribute is a dictionary-like object containing the form data from a POST request.
+request.args: This attribute is a dictionary-like object containing the query parameters from a request URL.
+'''
 
 
 
@@ -73,6 +105,51 @@ def user_login():
             return render_template('user_login.html', error="Invalid User Credentials")
     return render_template("user_login.html")
 
+
+
+
+'''
+In a Flask application, both `redirect` and `render_template` are functions used to generate HTTP responses, but they serve different purposes:
+
+1. "redirect":
+   - `redirect` is a function provided by Flask that generates an HTTP redirect response to a specified URL.
+   - It is typically used to redirect the user's browser to a different URL, either within the same Flask application or to an external URL.
+   - `redirect` takes a URL as its argument, which can be specified as a string representing the target URL or using the "url_for" function to generate a URL based on a specific route or endpoint in your Flask application.
+
+   - Example:
+     ```
+     return redirect(url_for('admin_dashboard'))
+     ```
+
+   - In this example, if the admin authentication is successful, the user is redirected to the `'admin_dashboard'` route in the Flask application.
+
+
+
+2. "url_for":
+
+   - "url_for" is a function provided by Flask that generates a URL for a given route or endpoint in your Flask application.
+   - It is commonly used to dynamically generate URLs in your templates or when generating redirects using the "redirect" function.
+   - "url_for" takes the name of a route or endpoint as its argument and optionally accepts keyword arguments corresponding to the route's parameters.
+   - Example:
+     ```
+     return redirect(url_for('admin_dashboard'))
+     ```
+   - In this example, "url_for('admin_dashboard')" generates the URL for the `'admin_dashboard'` route in the Flask application, which is then used as the target URL for the redirect.
+
+3. "`render_template`:"
+   - `render_template` is a function provided by Flask that renders a template file (typically an HTML file) and returns it as the HTTP response.
+   - It is used to generate HTML content dynamically by rendering templates with data passed from the view function.
+   - "render_template" takes the name of the template file as its argument and optionally accepts additional keyword arguments representing data to be passed to the template.
+   - Example:
+     ```
+     return render_template('admin_login.html', error="Invalid Admin Credentials")
+     ```
+   - In this example, if the admin authentication fails, the 'admin_login.html' template file is rendered with an error message indicating invalid admin credentials.
+
+
+In summary, `redirect` is used to redirect the user's browser to a different URL, `url_for` is used to generate URLs dynamically within your Flask application, and `render_template` is used to render HTML templates and generate dynamic HTML content for HTTP responses.
+
+'''
 
 
 
@@ -113,6 +190,12 @@ def create_account():
 
 
 
+
+
+
+
+
+
 @app.route('/add_donor', methods=['GET', 'POST'])
 def add_donor():
     if request.method == 'POST':
@@ -137,6 +220,7 @@ def add_donor():
 
            # Insert donor information into DONORS table
             donor_query = "INSERT INTO DONORS (donor_name, blood_type, date_of_donation, phone_no, address, email, body_weight, age, health_condition, blood_amount, hemoglobin_level) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+
             donor_values = (donor_name, blood_type, date_of_donation, phone_no, address, email, body_weight, age, health_conditions, blood_amount, hemoglobin_level)
 
             cur.execute(donor_query, donor_values)
@@ -149,13 +233,17 @@ def add_donor():
 
             # Insert blood donation information into BLOOD_UNITS table
             blood_unit_query = "INSERT INTO BLOOD_UNITS (donor_id, collection_date, expiry_date, blood_type, blood_amount) VALUES (%s, %s, DATE_ADD(%s, INTERVAL 42 DAY), %s, %s)"
+
             blood_unit_values = (donor_id, date_of_donation, date_of_donation, blood_type, blood_amount)
+
             cur.execute(blood_unit_query, blood_unit_values)
+
 
 
             blood_amount_query = "UPDATE BLOOD_AMOUNT SET blood_amount = blood_amount + %s WHERE blood_type = %s"
             increment_amount = blood_amount
             blood_amount_values = (increment_amount, blood_type)
+
             executeQuery(blood_amount_query, blood_amount_values)
 
 
@@ -177,7 +265,18 @@ def add_donor():
 
 
 
+'''
+"cur.lastrowid" ->
+In flask this is property of cursor object ('cur') that represents auto incremented ID of last row inserted into a table
 
+This property is typically used after executing an INSERT statement to retrieve auto generated primary key value of newly inserted row.
+
+"cur.fetchall()"->
+This is a method of the cursor object (cur) that retrieves all remaining rows of a query result set as a list of tuples. This method is typically used after executing a SELECT statement to fetch multiple rows of data from the database.
+
+
+
+'''
 
 
 
@@ -282,15 +381,24 @@ def add_recipient():
             total_available_blood = result['blood_amount'] if result and 'blood_amount' in result else 0
 
             if total_available_blood >= row["quantity_needed"]:
+                
                 # Proceed with the insertion into RECIPIENT table
                 query = "INSERT INTO RECIPIENT(blood_type, quantity_needed, date_of_request, recipient_name, dOB, age, sex, address) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+
+
                 values = (row["blood_type"], row["quantity_needed"], row["date_of_request"], row["recipient_name"], row["dOB"], row["age"], row["sex"], row["address"])
+
+
+
                 executeQuery(query, values)
 
+                
+                
                 # Update the available blood quantity in BLOOD_AMOUNT table
                 update_query = "UPDATE BLOOD_AMOUNT SET blood_amount = blood_amount - %s WHERE blood_type = %s"
                 update_values = (row["quantity_needed"], row["blood_type"])
-                affected_rows = executeQuery(update_query, update_values)
+
+                affected_rows = executeQuery(update_query, update_values)#returns no of affected rows in form of list
 
                 if isinstance(affected_rows, list) and affected_rows:
                     if affected_rows[0] > 0:
@@ -323,6 +431,13 @@ def add_recipient():
 
 
 
+
+
+
+
+
+
+
 @app.route('/add_plasma_details', methods=['GET', 'POST'])
 def add_plasma_details():
     if request.method == 'POST':
@@ -345,6 +460,14 @@ def add_plasma_details():
             return render_template('error.html', error_message=str(e))
 
     return render_template('add_plasma_details.html')
+
+
+
+
+
+
+
+
 
 
 
@@ -385,6 +508,7 @@ def update_blood_cost():
 
 
 
+
 @app.route('/add_payment_transaction', methods=['GET', 'POST'])
 def add_payment_transaction():
     if request.method == 'POST':
@@ -398,6 +522,8 @@ def add_payment_transaction():
         print("Payment transaction added successfully!")
 
     return render_template('add_payment_transaction.html')
+
+
 
 
 
@@ -565,7 +691,7 @@ def hire_staff():
             phone_no = request.form['phone_no']
             salary = request.form['salary']
 
-            #
+            
             # Your query and values
             query = "INSERT INTO STAFF(emp_id, fname, supervisor, address1, phone_no, salary) VALUES (%s, %s, %s, %s, %s, %s)"
             values = (emp_id, fname, supervisor, address1, phone_no, salary)
@@ -643,6 +769,24 @@ def admin_requests():
 
 
 
+'''
+
+get_flashed_messages() function is a part of Flask's flash messaging system. In a Flask application, flash messages are temporary messages that can be stored and retrieved across requests. They are typically used to display feedback or notifications to users, such as success messages, error messages, or informational messages.
+
+The get_flashed_messages() function is used to retrieve the flashed messages that were stored in the session during previous requests. It returns a list of flashed messages, and it can be called within a view function or a template to access these messages.
+
+'''
+
+
+
+
+
+
+
+
+
+
+
 
 
 def send_email(to, subject, body):
@@ -654,6 +798,17 @@ def send_email(to, subject, body):
         print(f"Error sending email: {e}")
         return False
 
+
+'''
+Python function, send_email, is designed to send an email using Flask-Mail, a Flask extension for sending email messages from your Flask application.
+
+function named send_email accepts three parameters: to, subject, and body, which represent the recipient email address, the email subject, and the email body respectively.
+
+Inside the try block, an instance of the Message class is created with the specified subject, recipient email address (to), and email body (body).
+The mail.send() method is then called to send the email message using the configured email server settings.
+If the email is sent successfully without raising any exceptions, the function returns True to indicate success.
+
+'''
 
 
 
@@ -698,13 +853,25 @@ def admin_approve(request_id):
                 user_email = fetch_user_email_from_db(username)
                 if user_email:
                     subject = 'Blood Request Status'
-                    body="Dear User , Your Request Has been taken into consideration , Kindly login your acccount to see the status of request \nThankyou!"
-                    if request_status == 'Approved':
+                    # body="Dear User , Your Request Has been taken into consideration , Kindly login your acccount to see the status of request \nThankyou!"
+                    
+                    
+                    new_query="SELECT status FROM REQUESTS WHERE request_id=%s"
+                    parameters=(request_id,)
+                    con=get_db_connection()
+                    cur=con.cursor()
+                    cur.execute(new_query,parameters)
+
+                    fetched=cur.fetchone()
+
+                    result_required=fetched['status']
+
+                    if result_required == 'Approved':
                         body = f"Your blood request with ID {request_id} has been approved. Kindly visit Blood Bank as soon as possible !"
                     
                     send_email(user_email, subject, body)
 
-                    flash('Request approved successfully. Email sent to the user.', 'success')
+                    # flash('Request approved successfully. Email sent to the user.', 'success')
                 else:
                     flash('User email not found. Email not sent.', 'warning')
             else:

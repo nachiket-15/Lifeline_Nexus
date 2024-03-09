@@ -1,3 +1,26 @@
+'''
+pymysql is python library that provides a pure Python MySQL client. It allows python programs to connect to a MySQL Server , execute SQL Queries , and interact with database 
+
+pymysql.connect() is used to establish connectiuon with MySQL server 
+
+connection=pymysql.connect(
+    host="",
+    user="",
+    password="",
+    database="",
+    cursorclass=pymysql.cursors.DictCursor
+)
+
+A cursor is created using "connection.cursor()" to execute SQL Queries 
+
+query=******sql query******
+
+An SQL query is executed using "cursor.execute(query)"
+
+'''
+
+
+
 import pymysql
 from datetime import datetime, date
 
@@ -7,7 +30,7 @@ def get_db_connection():
         con = pymysql.connect(
             host='localhost',
             user='root',
-            password='Nachiket4545',
+            password='********',
             database='PLASMABANK',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -19,6 +42,7 @@ def get_db_connection():
 
 
 con = get_db_connection()
+
 def excepting(e):
 	con.rollback()
 	print("Failed to insert/delete/update/find database")
@@ -65,6 +89,17 @@ def fetchOne(query, values):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 # AUTHENTICATE ADMIN
 def authenticate_admin(username, password):
     con = get_db_connection()
@@ -80,6 +115,28 @@ def authenticate_admin(username, password):
         finally:
             con.close()
     return False
+
+
+'''
+
+The query is executed using cursors's "execute()" method.
+The result is fetched using "fetchone()" method.
+fetchone() method retrieves first row of query result as tuple and stores it into result variable
+
+If matching admin account is found then function returns true , else false.
+If an error occurs during execution of SQL Query or any other part of function , exception is caught and database connection is closed whether an exception occurs or not.
+
+
+'''
+
+
+
+
+
+
+
+
+
 
 
 
@@ -99,6 +156,11 @@ def authenticate_user(username, password):
         finally:
             con.close()
     return False
+
+
+
+
+
 
 
 
@@ -128,6 +190,12 @@ def create_user_account(username,email,password):
         finally:
             con.close()
     return False
+
+
+
+
+
+
 
 
 
